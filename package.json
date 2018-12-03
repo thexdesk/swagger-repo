@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "body-parser": "^1.15.2",
+    "chalk": "^2.4.1",
     "commander": "^2.9.0",
     "cors": "^2.7.1",
     "express": "^4.13.4",
@@ -39,19 +40,20 @@
     "js-yaml": "^3.5.3",
     "json-pointer": "^0.6.0",
     "jsonpath": "^1.0.0",
+    "livereload": "^0.7.0",
     "lodash": "^4.5.0",
     "mkdirp": "^0.5.1",
     "require-dir": "^1.0.0",
-    "swagger-editor": "^2.10.3",
-    "swagger-ui": "^2.2.0",
-    "sway": "^1.0.0"
+    "swagger-editor-dist": "^3.6.16",
+    "swagger-ui-dist": "^3.20.1",
+    "sway": "^2.0.5"
   },
   "devDependencies": {
-    "eslint": "^4.18.1",
-    "eslint-config-standard": "^11.0.0",
+    "eslint": "^5.9.0",
+    "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
