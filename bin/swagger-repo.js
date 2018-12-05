@@ -7,16 +7,10 @@ var _ = require('lodash')
 var program = require('commander')
 var express = require('express')
 var cors = require('cors')
-var livereload = require('livereload')
-
-const LIVERELOAD_SCRIPT = `
-<script>
-document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
-':35729/livereload.js?snipver=1"></' + 'script>')
-</script>
-`
+var chalk = require('chalk')
 
 var api = require('../')
+var liveReload = require('../lib/livereload')
 
 program.command('bundle')
   .description('Bundles a multi-file Swagger spec')
@@ -81,13 +75,7 @@ program.command('serve')
     var app = express()
     app.use(cors())
 
-    app.get('/', (_, res) => {
-      // inject Live Reload
-      const fileContents = fs.readFileSync('web/index.html', 'utf-8')
-      res.send(fileContents.replace(/<\/body>/, LIVERELOAD_SCRIPT + '</body>'))
-      res.end()
-    })
-
+    app.get('/', liveReload.injectLiveReloadingMiddleware)
     app.use('/', api.swaggerFileMiddleware(options))
     app.use('/swagger-ui', api.swaggerUiMiddleware(options))
 
@@ -101,16 +89,18 @@ program.command('serve')
     })
 
     // Run server
-    app.listen(options.port || 8080)
+    const port = options.port || 8080
+    app.listen(port)
 
-    var lrserver = livereload.createServer({
-      exts: [ 'html', 'css', 'js', 'png', 'gif', 'jpg', 'ico', 'yaml', 'yml', 'json' ]
-    })
+    liveReload.startLiveReload(options);
 
-    lrserver.watch([
-      'web',
-      options.basedir || 'spec'
-    ])
+    const baseUrl = 'http://localhost:' + port;
+
+    console.log('\nDevelopment server started 🎉 :\n')
+    console.log(`  ${chalk.green('✔')} Documentation (ReDoc):\t${chalk.blue(chalk.underline(baseUrl))}`)
+    console.log(`  ${chalk.green('✔')} Swagger Editor: \t\t${chalk.blue(chalk.underline(baseUrl + '/swagger-editor'))}`);
+    console.log();
+    console.log('Watching changes...');
   })
 
 program
