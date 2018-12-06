@@ -36,6 +36,9 @@
     "commander": "^2.9.0",
     "cors": "^2.7.1",
     "express": "^4.13.4",
+    "fs-extra": "^7.0.1",
+    "gh-pages": "^2.0.1",
+    "github-status-reporter": "^0.2.6",
     "glob": "^7.0.0",
     "js-yaml": "^3.5.3",
     "json-pointer": "^0.6.0",
@@ -49,11 +52,6 @@
     "sway": "^2.0.5"
   },
   "devDependencies": {
-    "eslint": "^5.9.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-node": "^8.0.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint": "^5.9.0"
   }
 }

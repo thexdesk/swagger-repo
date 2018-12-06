@@ -1,16 +1,24 @@
 #!/usr/bin/env node
 'use strict'
 
-var fs = require('fs')
-
+var fs = require('fs-extra')
+var path = require('path')
 var _ = require('lodash')
 var program = require('commander')
 var express = require('express')
 var cors = require('cors')
 var chalk = require('chalk')
+var ghpages = require('gh-pages')
+
+var { execSync } = require('child_process')
 
 var api = require('../')
 var liveReload = require('../lib/livereload')
+
+function writeAndLog(filename, contents) {
+  fs.writeFileSync(filename, contents);
+  console.log(`Created ${chalk.blue(filename)}`)
+}
 
 program.command('bundle')
   .description('Bundles a multi-file Swagger spec')
@@ -29,6 +37,86 @@ program.command('bundle')
       console.log(str)
     }
   })
+
+program.command('build')
+  .description('Builds the static assets and puts it ')
+  .option('-b, --basedir <relpath>', 'The output file')
+  .option('-o, --outdir <dirname>', 'The output directory, web_deploy by default')
+  .action(function (options) {
+    var swagger = api.bundle({...options, verbose: true})
+    var json = api.stringify(swagger)
+    var yaml = api.stringify(swagger, {yaml: true})
+    var html = api.compileIndexPage()
+
+    var outDir = options.outdir || 'web_deploy';
+    fs.removeSync(outDir);
+    fs.mkdirpSync(outDir);
+    fs.copySync('web/', outDir, {
+      filter: filename => filename !== 'redoc-config.yaml'
+    });
+    console.log(`Copied ${chalk.blue('/web')} to ${chalk.blue(outDir)}`)
+    writeAndLog(path.join(outDir, 'openapi.json'), json);
+    writeAndLog(path.join(outDir, 'openapi.yaml'), yaml);
+    writeAndLog(path.join(outDir, 'index.html'), html)
+  })
+
+  program.command('gh-pages')
+  .description('Deploys to the gh-pages branch')
+  .option('-c, --clean', 'Do not preserve existing files (will remove previews)')
+  .option('-p, --preview <name>', 'Deploy as preview')
+  .action(function (options) {
+    console.log('Deploying... It may take a few minutes');
+    fs.removeSync(path.join(require.resolve('gh-pages'), '../../.cache'));
+
+    let publishOpts = {
+      add: !!options.clean, 
+      push: false,
+    }
+
+    if (options.preview) {
+      publishOpts.dest = 'preview/' + options.preview;
+    }
+
+    if (process.env.TRAVIS) {
+      if (!process.env.GH_TOKEN) {
+        console.log('You have to set GH_TOKEN environment variable when deploying from Travis CI');
+        process.exit(1);
+      }
+
+      publishOpts = {
+        ...publishOpts, 
+        silent: true,
+        message: 'Deployed to Github Pages',
+        user: 'Travis-CI',
+        email: 'travis@travis',
+        repo: 'https://' + process.env.GH_TOKEN + '@github.com/' + process.env.TRAVIS_REPO_SLUG + '.git'
+      }
+    }
+
+    ghpages.publish('web_deploy', publishOpts, function(err) {
+      if (err) {
+        console.log(chalk.red('Deploy failed: ') + err);
+      }
+      console.log(chalk.green('🎉  Deployed uccessfully!'));
+      if (options.preview && process.env.TRAVIS_BRANCH) {
+        notifyBranchPreviewFromTravis(process.env.TRAVIS_BRANCH);
+      }
+    })
+  })
+
+function notifyBranchPreviewFromTravis(branch) {
+  try {
+    const [owner, repo] = process.env.TRAVIS_REPO_SLUG.split('/');
+    const url = `http://${owner}.github.io/${repo}/preview/${branch}/`;
+    execSync(`github-status-reporter --user ${owner} --repo ${repo} --branch ${branch} --state success --target-url="${url}" --description="Link to preview" --context "Preview"`, {
+      GITHUB_TOKEN: process.env.GH_TOKEN,
+      stdio: 'inherit'
+    });
+    console.log('Set branch status on GitHub')
+  } catch(e) {
+    console.log('Failed to update branch status on GitHub')
+  }
+}
 
 program.command('sync-with-swagger')
   .description('Sync single-file Swagger spec with bundle')
@@ -75,7 +163,7 @@ program.command('serve')
     var app = express()
     app.use(cors())
 
-    app.get('/', liveReload.injectLiveReloadingMiddleware)
+    app.get('/', api.indexMiddleware)
     app.use('/', api.swaggerFileMiddleware(options))
     app.use('/swagger-ui', api.swaggerUiMiddleware(options))
 
