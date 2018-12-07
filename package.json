@@ -29,7 +29,7 @@
     "swagger-repo": "./bin/swagger-repo.js"
   },
   "engines": {
-    "node": ">=6.4.0"
+    "node": ">=10.14.0"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -39,7 +39,6 @@
     "express": "^4.13.4",
     "fs-extra": "^7.0.1",
     "gh-pages": "^2.0.1",
-    "github-status-reporter": "^0.2.6",
     "glob": "^7.0.0",
     "js-yaml": "^3.5.3",
     "json-pointer": "^0.6.0",
@@ -47,6 +46,7 @@
     "livereload": "^0.7.0",
     "lodash": "^4.5.0",
     "mkdirp": "^0.5.1",
+    "node-fetch": "^2.3.0",
     "require-dir": "^1.0.0",
     "swagger-editor-dist": "^3.6.16",
     "swagger-ui-dist": "^3.20.1",

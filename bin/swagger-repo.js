@@ -59,8 +59,14 @@ program
     });
     console.log(`Copied ${chalk.blue('/web')} to ${chalk.blue(outDir)}`);
     if (config.swaggerUI) {
-      fs.copySync(path.dirname(require.resolve('swagger-ui-dist')), path.join(outDir, 'swagger-ui'));
-      fs.writeFileSync(path.join(outDir, 'swagger-ui', 'index.html'), api.getPatchedSwaggerUIIndex());
+      fs.copySync(
+        path.dirname(require.resolve('swagger-ui-dist')),
+        path.join(outDir, 'swagger-ui')
+      );
+      fs.writeFileSync(
+        path.join(outDir, 'swagger-ui', 'index.html'),
+        api.getPatchedSwaggerUIIndex()
+      );
       console.log(`Copied Swagger UI to ${chalk.blue(path.join(outDir, 'swagger-ui'))}`);
     }
     writeAndLog(path.join(outDir, 'openapi.json'), json);
@@ -78,7 +84,7 @@ program
     fs.removeSync(path.join(require.resolve('gh-pages'), '../../.cache'));
 
     let publishOpts = {
-      add: !!options.clean,
+      add: !!options.clean
       // push: false
     };
 
@@ -103,13 +109,14 @@ program
       };
     }
 
-    ghpages.publish('web_deploy', publishOpts, function(err) {
+    ghpages.publish('web_deploy', publishOpts, async function(err) {
       if (err) {
         console.log(chalk.red('Deploy failed: ') + err);
       }
       console.log(chalk.green('🎉  Deployed uccessfully!'));
       if (options.preview && process.env.TRAVIS_BRANCH) {
-        notifyBranchPreviewFromTravis(process.env.TRAVIS_BRANCH);
+        await notifyBranchPreviewFromTravis(process.env.TRAVIS_BRANCH, process.env.TRAVIS_COMMIT);
+        console.log('Set Preview status on GitHub');
       }
     });
   });
@@ -157,7 +164,7 @@ program
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
     const config = api.readConfig();
-  
+
     const app = express();
     app.use(cors());
 
@@ -191,7 +198,9 @@ program
     );
     if (config.swaggerUI) {
       console.log(
-        `  ${chalk.green('✔')} Documentation (SwaggerUI):\t${chalk.blue(chalk.underline(baseUrl + '/swagger-ui/'))}`
+        `  ${chalk.green('✔')} Documentation (SwaggerUI):\t${chalk.blue(
+          chalk.underline(baseUrl + '/swagger-ui/')
+        )}`
       );
     }
     console.log(
