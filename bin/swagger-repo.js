@@ -55,7 +55,7 @@ program
     fs.removeSync(outDir);
     fs.mkdirpSync(outDir);
     fs.copySync('web/', outDir, {
-      filter: filename => filename !== 'redoc-config.yaml'
+      filter: filename => !filename.endsWith('redoc-config.yaml')
     });
     console.log(`Copied ${chalk.blue('/web')} to ${chalk.blue(outDir)}`);
     if (config.swaggerUI) {
