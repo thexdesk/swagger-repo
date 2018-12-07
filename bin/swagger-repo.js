@@ -44,6 +44,8 @@ program
   .option('-b, --basedir <relpath>', 'The output file')
   .option('-o, --outdir <dirname>', 'The output directory, web_deploy by default')
   .action(function(options) {
+    const config = api.readConfig();
+
     const swagger = api.bundle({ ...options, verbose: true });
     const json = api.stringify(swagger);
     const yaml = api.stringify(swagger, { yaml: true });
@@ -56,6 +58,11 @@ program
       filter: filename => filename !== 'redoc-config.yaml'
     });
     console.log(`Copied ${chalk.blue('/web')} to ${chalk.blue(outDir)}`);
+    if (config.swaggerUI) {
+      fs.copySync(path.dirname(require.resolve('swagger-ui-dist')), path.join(outDir, 'swagger-ui'));
+      fs.writeFileSync(path.join(outDir, 'swagger-ui', 'index.html'), api.getPatchedSwaggerUIIndex());
+      console.log(`Copied Swagger UI to ${chalk.blue(path.join(outDir, 'swagger-ui'))}`);
+    }
     writeAndLog(path.join(outDir, 'openapi.json'), json);
     writeAndLog(path.join(outDir, 'openapi.yaml'), yaml);
     writeAndLog(path.join(outDir, 'index.html'), html);
@@ -72,7 +79,7 @@ program
 
     let publishOpts = {
       add: !!options.clean,
-      push: false
+      // push: false
     };
 
     if (options.preview) {
@@ -149,12 +156,17 @@ program
   .option('-p, --port <port>', 'The server port number')
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
+    const config = api.readConfig();
+  
     const app = express();
     app.use(cors());
 
     app.get('/', api.indexMiddleware);
     app.use('/', api.swaggerFileMiddleware(options));
-    app.use('/swagger-ui', api.swaggerUiMiddleware(options));
+
+    if (config.swaggerUI) {
+      app.use('/swagger-ui', api.swaggerUiMiddleware(options));
+    }
 
     app.use('/swagger-editor', api.swaggerEditorMiddleware(options));
 
@@ -177,9 +189,14 @@ program
     console.log(
       `  ${chalk.green('✔')} Documentation (ReDoc):\t${chalk.blue(chalk.underline(baseUrl))}`
     );
+    if (config.swaggerUI) {
+      console.log(
+        `  ${chalk.green('✔')} Documentation (SwaggerUI):\t${chalk.blue(chalk.underline(baseUrl + '/swagger-ui/'))}`
+      );
+    }
     console.log(
       `  ${chalk.green('✔')} Swagger Editor: \t\t${chalk.blue(
-        chalk.underline(baseUrl + '/swagger-editor')
+        chalk.underline(baseUrl + '/swagger-editor/')
       )}`
     );
     console.log();
