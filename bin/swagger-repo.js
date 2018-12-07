@@ -21,17 +21,17 @@ function writeAndLog(filename, contents) {
 
 program
   .command('bundle')
-  .description('Bundles a multi-file Swagger spec')
+  .description('Bundles a multi-file OpenAPI spec')
   .option('-b, --basedir <relpath>', 'The output file')
   .option('-o, --outfile <filename>', 'The output file')
   .option('-y, --yaml', 'Output YAML(Default is JSON)')
   .action(function(options) {
-    const swagger = api.bundle({ ...options, verbose: true });
-    const str = api.stringify(swagger, options);
+    const spec = api.bundle({ ...options, verbose: true });
+    const str = api.stringify(spec, options);
 
     if (options.outfile) {
       fs.writeFileSync(options.outfile, str);
-      console.log('Created "%s" swagger file.', options.outfile);
+      console.log('Created "%s" openapi file.', options.outfile);
     } else {
       // Write the bundled spec to stdout
       console.log(str);
@@ -46,9 +46,9 @@ program
   .action(function(options) {
     const config = api.readConfig();
 
-    const swagger = api.bundle({ ...options, verbose: true });
-    const json = api.stringify(swagger);
-    const yaml = api.stringify(swagger, { yaml: true });
+    const spec = api.bundle({ ...options, verbose: true });
+    const json = api.stringify(spec);
+    const yaml = api.stringify(spec, { yaml: true });
     const html = api.compileIndexPage();
 
     const outDir = options.outdir || 'web_deploy';
@@ -122,21 +122,21 @@ program
   });
 
 program
-  .command('sync-with-swagger')
-  .description('Sync single-file Swagger spec with bundle')
+  .command('sync-with-spec')
+  .description('Sync single-file OpenAPI spec with bundle')
   .option('-b, --basedir <relpath>', 'The output file')
-  .arguments('<swagger>')
-  .action(function(swagger, options) {
-    api.syncWithSwagger(fs.readFileSync(swagger, 'utf-8'), options);
+  .arguments('<spec>')
+  .action(function(spec, options) {
+    api.syncWithSpec(fs.readFileSync(spec, 'utf-8'), options);
   });
 
 program
   .command('validate')
-  .description('Validate Swagger file')
+  .description('Validate OpenAPI file')
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
-    const swagger = api.bundle(options);
-    api.validate(swagger, function(error, result) {
+    const spec = api.bundle(options);
+    api.validate(spec, function(error, result) {
       const isErrors = !_.isEmpty(result.errors);
       const isWarnings = !_.isEmpty(result.warnings);
 
@@ -159,7 +159,7 @@ program
 
 program
   .command('serve')
-  .description('Serves a Swagger and some tools via the built-in HTTP server')
+  .description('Serves a OpenAPI and some tools via the built-in HTTP server')
   .option('-p, --port <port>', 'The server port number')
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
@@ -169,7 +169,7 @@ program
     app.use(cors());
 
     app.get('/', api.indexMiddleware);
-    app.use('/', api.swaggerFileMiddleware(options));
+    app.use('/', api.specMiddleware(options));
 
     if (config.swaggerUI) {
       app.use('/swagger-ui', api.swaggerUiMiddleware(options));
