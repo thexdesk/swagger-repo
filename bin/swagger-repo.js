@@ -136,7 +136,7 @@ program
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
     const spec = api.bundle(options);
-    api.validate(spec, function(error, result) {
+    api.validate(spec, options, function(error, result) {
       const isErrors = !_.isEmpty(result.errors);
       const isWarnings = !_.isEmpty(result.warnings);
 
