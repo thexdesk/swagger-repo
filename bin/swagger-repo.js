@@ -84,7 +84,7 @@ program
     fs.removeSync(path.join(require.resolve('gh-pages'), '../../.cache'));
 
     let publishOpts = {
-      add: !!options.clean
+      add: !options.clean
       // push: false
     };
 
