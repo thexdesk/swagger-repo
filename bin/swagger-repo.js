@@ -136,23 +136,9 @@ program
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
     const spec = api.bundle(options);
-    api.validate(spec, options, function(error, result) {
-      const isErrors = !_.isEmpty(result.errors);
-      const isWarnings = !_.isEmpty(result.warnings);
-
-      if (isErrors) {
-        console.error('Validation errors:\n' + JSON.stringify(result.errors, null, 2));
-        process.exitCode = 255;
-      }
-
+    api.validate(spec, options, function(error) {
       if (error) {
-        console.error('Validation error:\n' + JSON.stringify(error.message, null, 2));
-        process.exitCode = 255;
-      }
-
-      if (isWarnings) {
-        // FIXME: 'discrimanator' doesn't handle properly by sway so ignore warnings
-        console.error('Validation warnings:\n' + JSON.stringify(result.warnings, null, 2));
+        process.exit(255);
       }
     });
   });
@@ -162,6 +148,7 @@ program
   .description('Serves a OpenAPI and some tools via the built-in HTTP server')
   .option('-p, --port <port>', 'The server port number')
   .option('-b, --basedir <relpath>', 'The output file')
+  .option('--validate', 'Validate spec on each change')
   .action(function(options) {
     const config = api.readConfig();
 
@@ -188,7 +175,13 @@ program
     const port = options.port || 8080;
     app.listen(port);
 
-    liveReload.startLiveReload(options);
+    liveReload.startLiveReload(options, () => {
+      if (options.validate) {
+        api.validate(api.bundle(options), options, err => {
+          if (err) console.log();
+        });
+      }
+    });
 
     const baseUrl = 'http://localhost:' + port;
 
