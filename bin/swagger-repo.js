@@ -22,7 +22,7 @@ function writeAndLog(filename, contents) {
 program
   .command('bundle')
   .description('Bundles a multi-file OpenAPI definition')
-  .option('-b, --basedir <relpath>', 'The output file')
+  .option('-b, --basedir <relpath>', 'The base dir')
   .option('-o, --outfile <filename>', 'The output file')
   .option('-y, --yaml', 'Output YAML(Default is JSON)')
   .action(function(options) {
@@ -136,10 +136,13 @@ program
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
     const spec = api.bundle(options);
+    console.log('Validating definition...')
     api.validate(spec, options, function(error) {
       if (error) {
         process.exit(255);
+        return;
       }
+      console.log('OK')
     });
   });
 
