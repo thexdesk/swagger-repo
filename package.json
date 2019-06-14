@@ -1,6 +1,6 @@
 {
   "name": "swagger-repo",
-  "version": "2.0.0-rc.12",
+  "version": "2.0.0-rc.13",
   "description": "CLI tool to help you manage your OpenAPI (fka Swagger) repo.",
   "main": "lib/index.js",
   "repository": {
