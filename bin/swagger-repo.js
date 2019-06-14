@@ -135,13 +135,13 @@ program
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(options) {
     const spec = api.bundle(options);
-    console.log('Validating definition...')
+    console.log('Validating definition...');
     api.validate(spec, options, function(error) {
       if (error) {
         process.exit(255);
         return;
       }
-      console.log('OK')
+      console.log('OK');
     });
   });
 
