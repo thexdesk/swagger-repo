@@ -130,7 +130,7 @@ program
   });
 
 program
-  .command('validate <file>')
+  .command('validate [file]')
   .description('Validate OpenAPI file')
   .option('-b, --basedir <relpath>', 'The output file')
   .action(function(file, options) {
