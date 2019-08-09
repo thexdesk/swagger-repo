@@ -130,13 +130,13 @@ program
   });
 
 program
-  .command('validate')
+  .command('validate <file>')
   .description('Validate OpenAPI file')
   .option('-b, --basedir <relpath>', 'The output file')
-  .action(function(options) {
-    const spec = api.bundle(options);
+  .action(function(file, options) {
+    const spec = api.bundle({...options, mainFile: file});
     console.log('Validating definition...');
-    api.validate(spec, options, function(error) {
+    api.validate(spec, {...options, mainFile: file}, function(error) {
       if (error) {
         process.exit(255);
         return;
