@@ -50,7 +50,7 @@
     "node-fetch": "^2.3.0",
     "oas-validator": "^1.1.13",
     "require-dir": "^1.0.0",
-    "swagger-editor-dist": "^3.6.16",
+    "swagger-editor-dist": "^3.18.2",
     "swagger-ui-dist": "^3.20.1",
     "sway": "^2.0.6"
   },
