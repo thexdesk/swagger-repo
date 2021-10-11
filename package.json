@@ -51,7 +51,7 @@
     "oas-validator": "^1.1.13",
     "require-dir": "^1.0.0",
     "swagger-editor-dist": "^3.6.16",
-    "swagger-ui-dist": "^3.20.1",
+    "swagger-ui-dist": "^3.52.3",
     "sway": "^2.0.6"
   },
   "devDependencies": {
