@@ -48,7 +48,7 @@
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
-    "oas-validator": "^1.1.13",
+    "oas-validator": "^5.0.0",
     "require-dir": "^1.0.0",
     "swagger-editor-dist": "^3.6.16",
     "swagger-ui-dist": "^3.20.1",
