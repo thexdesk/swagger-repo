@@ -47,7 +47,7 @@
     "livereload": "^0.8.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^3.2.10",
     "oas-validator": "^1.1.13",
     "require-dir": "^1.0.0",
     "swagger-editor-dist": "^3.6.16",
