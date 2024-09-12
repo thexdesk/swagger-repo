@@ -33,11 +33,11 @@
     "node": ">=10.14.0"
   },
   "dependencies": {
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.20.3",
     "chalk": "^2.4.1",
     "commander": "^2.9.0",
     "cors": "^2.7.1",
-    "express": "^4.13.4",
+    "express": "^4.21.0",
     "fs-extra": "^7.0.1",
     "gh-pages": "^2.0.1",
     "glob": "^7.0.0",
