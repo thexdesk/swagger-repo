@@ -44,7 +44,7 @@
     "js-yaml": "^3.13.1",
     "json-pointer": "^0.6.0",
     "jsonpath": "^1.0.2",
-    "livereload": "^0.8.0",
+    "livereload": "^0.9.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.3.0",
